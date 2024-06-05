@@ -1,7 +1,7 @@
 /data
 /pics
 /.venv
-pred.csv
+*.csv
 notebook_template.ipynb
 
 
