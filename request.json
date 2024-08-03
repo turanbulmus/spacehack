@@ -1,17 +1,16 @@
 {
-    "name": "spacehackbatch",
-    "displayName": "spacehackbatch",
+    "displayName": "spacehackbatch_check",
     "model": "publishers/google/models/gemini-1.5-pro-001",
     "inputConfig": {
-      "instancesFormat":"bigquery",
-      "bigquerySource":{
-        "inputUri" : "bq://turan-genai-bb.spacehack.batch_input"
-      }
+        "instancesFormat": "bigquery",
+        "bigquerySource": {
+            "inputUri": "bq://turan-genai-bb.spacehack.input"
+        }
     },
     "outputConfig": {
-      "predictionsFormat":"bigquery",
-      "bigqueryDestination":{
-        "outputUri": "bq://turan-genai-bb.spacehack.batch_output"
+        "predictionsFormat": "bigquery",
+        "bigqueryDestination": {
+            "outputUri": "bq://turan-genai-bb.spacehack.output"
         }
     }
 }
