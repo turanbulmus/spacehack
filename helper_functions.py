@@ -394,3 +394,34 @@ def build_run_batch(bq_client, batch_index, labels_ref, PROJECT_ID, DATASET_ID, 
   FROM {PROJECT_ID}.{DATASET_ID}.{run_name} 
   """
   return bq_client.query_and_wait(download_query).to_dataframe()
+
+def display_images(index_no):
+  """
+  Displays three images side by side: real, reference, and difference.
+
+  Args:
+    index_no: The index number used to construct file names.
+  """
+  real_image_path = f"data/pics/Example_{index_no}_fig_{0}.png"
+  reference_image_path = f"data/pics/Example_{index_no}_fig_{1}.png"
+  difference_image_path = f"data/pics/Example_{index_no}_fig_{2}.png"
+
+  real_image = plt.imread(real_image_path)
+  reference_image = plt.imread(reference_image_path)
+  difference_image = plt.imread(difference_image_path)
+
+  fig, axes = plt.subplots(1, 3, figsize=(10, 5))
+
+  axes[0].imshow(real_image)
+  axes[0].set_title('Real Image')
+  axes[0].axis('off')
+
+  axes[1].imshow(reference_image)
+  axes[1].set_title('Reference Image')
+  axes[1].axis('off')
+
+  axes[2].imshow(difference_image)
+  axes[2].set_title('Difference Image')
+  axes[2].axis('off')
+
+  plt.show()
