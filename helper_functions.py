@@ -35,12 +35,13 @@ def generate(model, prompt):
   # Return the generated responses.
   return responses
 
-def create_ex(data_index):
+def create_ex(data_index, examples):
   """
     Loads and returns a list containing strings and images to be used for Gemini for a given data index.
 
     Args:
         data_index (int): The index of the data set to load.
+        examples (Boolean): A flag that creates examples instead of images for the dynamic prompt
 
     Returns:
         list: A list containing strings and images. The list contains:
@@ -54,12 +55,17 @@ def create_ex(data_index):
   str_new = "new image: " # String for labeling the new image
   str_ref = "reference image: " # String for labeling the reference image
   str_dif = "difference image: " # String for labeling the difference image
-
-  # Load images from files using the given data index
-  image1 = Part.from_image(Image.load_from_file(f"data/pics/Example_{data_index}_fig_0.png"))
-  image2 = Part.from_image(Image.load_from_file(f"data/pics/Example_{data_index}_fig_1.png"))
-  image3 = Part.from_image(Image.load_from_file(f"data/pics/Example_{data_index}_fig_2.png"))
-  
+  if examples:
+    # Load images from files using the given data index
+    image1 = Part.from_image(Image.load_from_file(f"data/pics/prompt_pics/Example_{data_index}_fig_0.png"))
+    image2 = Part.from_image(Image.load_from_file(f"data/pics/prompt_pics/Example_{data_index}_fig_1.png"))
+    image3 = Part.from_image(Image.load_from_file(f"data/pics/prompt_pics/Example_{data_index}_fig_2.png"))
+  else:
+    # Load images from files using the given data index
+    image1 = Part.from_image(Image.load_from_file(f"data/pics/Example_{data_index}_fig_0.png"))
+    image2 = Part.from_image(Image.load_from_file(f"data/pics/Example_{data_index}_fig_1.png"))
+    image3 = Part.from_image(Image.load_from_file(f"data/pics/Example_{data_index}_fig_2.png"))
+    
   # Return the list containing strings and images
   return [str_new, image1, str_ref, image2, str_dif, image3]
 
@@ -333,7 +339,7 @@ def build_run_batch(bq_client, batch_index, labels_ref, PROJECT_ID, DATASET_ID, 
   batch_df = pd.DataFrame(columns=["request", "index_no"])
 
   for t in batch_index:
-    dyna_prompt = examples + create_ex(t)
+    dyna_prompt = examples + create_ex(t, False)
     df_temp = pd.DataFrame([[batch_data_create(stat_prompt, dyna_prompt, temperature, top_p), t]], columns=["request", "index_no"])
     batch_df = pd.concat([batch_df, df_temp], ignore_index=True)
   

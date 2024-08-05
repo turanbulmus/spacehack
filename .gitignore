@@ -1,9 +1,11 @@
 /data
 /pics
 /.venv
+/results
+request.json
 *.csv
 notebook_template.ipynb
-
+.gitignore
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
