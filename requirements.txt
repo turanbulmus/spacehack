@@ -3,3 +3,5 @@ numpy
 matplotlib
 scikit-learn
 google-cloud-aiplatform
+gdown
+db-dtypes

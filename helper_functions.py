@@ -113,10 +113,15 @@ def preprocess(dataset, index_no):
   # Return the real image, the reference image and the difference image
   return [real_image, ref_image, norm_diff_image]
 
-def save_picture(dataset, index_no):
+def save_picture(dataset, index_no, example):
   # Save the images as png
   processed_im = preprocess(dataset, index_no)
-  for j in range(3):
+  if example: 
+    for j in range(3):
+      plt.imsave(f"data/pics/prompt_pics/Example_{index_no}_fig_{j}.png", processed_im[j],cmap='gray')
+
+  else:
+    for j in range(3):
       plt.imsave(f"data/pics/Example_{index_no}_fig_{j}.png", processed_im[j],cmap='gray')
       
 def save_prompt(instructions, run_name):
@@ -374,10 +379,15 @@ def build_run_batch(bq_client, batch_index, labels_ref, PROJECT_ID, DATASET_ID, 
   # Run the query
   query_job = bq_client.query(create_table_query)
   results = query_job.result()
+  # Clean up after the run
   # Delete the interim tables
   bq_client.delete_table(output_table_name, not_found_ok=True)  # Make an API request.
   bq_client.delete_table(input_table_name, not_found_ok=True)  # Make an API request.
-  
+  # Delete the reqest.json file
+  try:
+    os.remove("request.json")
+  except FileNotFoundError:
+      pass
   # Download the results to generate KPIs
   download_query = f"""
   SELECT index_no, actual, predicted, explanation
