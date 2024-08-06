@@ -3,7 +3,6 @@
 /.venv
 /results
 request.json
-*.csv
 notebook_template.ipynb
 
 # Byte-compiled / optimized / DLL files
