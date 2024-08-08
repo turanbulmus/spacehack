@@ -372,6 +372,7 @@ def build_run_batch(bq_client, batch_index, labels_ref, PROJECT_ID, DATASET_ID, 
   SELECT  t1.index_no, t2.label AS actual,
       JSON_VALUE(JSON_VALUE(REGEXP_REPLACE(t1.response, r'^\[(.*)\]$', r'\\1'), '$.content.parts[0].text'),'$.class') AS predicted,
       JSON_VALUE(JSON_VALUE(REGEXP_REPLACE(t1.response, r'^\[(.*)\]$', r'\\1'), '$.content.parts[0].text'),'$.explanation') AS explanation,
+      JSON_VALUE(JSON_VALUE(REGEXP_REPLACE(t1.response, r'^\[(.*)\]$', r'\\1'), '$.content.parts[0].text'),'$.interest_score') AS interest_score,
       t1.response, t1.request 
           FROM `{output_table_name}` as t1
     LEFT JOIN `{PROJECT_ID}.{DATASET_ID}.{labels_ref.table_id}` as t2 
@@ -390,7 +391,7 @@ def build_run_batch(bq_client, batch_index, labels_ref, PROJECT_ID, DATASET_ID, 
       pass
   # Download the results to generate KPIs
   download_query = f"""
-  SELECT index_no, actual, predicted, explanation
+  SELECT index_no, actual, predicted, explanation, interest_score
   FROM {PROJECT_ID}.{DATASET_ID}.{run_name} 
   """
   return bq_client.query_and_wait(download_query).to_dataframe()
