@@ -5,7 +5,9 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
+from matplotlib.patches import Circle
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from astropy.visualization import ZScaleInterval
 
 from vertexai.generative_models import GenerativeModel, Part, FinishReason, Image
 import vertexai.preview.generative_models as generative_models
@@ -69,61 +71,52 @@ def create_ex(data_index, examples):
   # Return the list containing strings and images
   return [str_new, image1, str_ref, image2, str_dif, image3]
 
-def preprocess(dataset, index_no):
-  """Preprocesses a pair of images from a dataset for analysis.
-  This function takes a multi-dimensional array containing image data, a corresponding array of labels, and an index. It then:
-
-  1. **Combines** the real and reference images at the specified index.
-  2. **Normalizes** the combined image to a range of 0-255.
-  3. **Separates** the normalized image back into real and reference images.
-  4. **Calculates** the difference image between the reference and real images.
-  5. **Returns** the real image, reference image, difference image, and the label associated with the index.
-
+def preprocess(nd_array, index_no):
+  """Preprocesses a triplet of images from a multi-dimensional array for analysis using ZScaleInterval from astropy.
+  
   Args:
-    dataset: A multi-dimensional array containing image data. Each element is expected to be a 4-dimensional array representing a pair of images (real and reference).
-    index_no: The index of the image pair to be processed.
+    dataset: A multi-dimensional array containing image data. Each element is expected to be a 3-dimensional array representing a triplet of images (new, reference and difference).
+    index_no: The index of the image triplet to be processed.
 
   Returns:
     A tuple containing:
-      - real_image: A 2D array representing the real image.
+      - real_image: A 2D array representing the new image.
       - ref_image: A 2D array representing the reference image.
       - diff_image: A 2D array representing the difference between the reference and real images.
-      - label: The label associated with the processed image pair.
   """
-  # Combine the real image and the reference image
-  comb_im = np.append(dataset[index_no, 0:100, 0:100, 0], dataset[index_no, 0:100, 0:100, 1])
-  # Normalize the combined image with clipping to 2% and 98%
-  p2 = np.percentile(comb_im, 2)
-  p98 = np.percentile(comb_im, 98)
-  comb_im[comb_im < p2] = p2
-  comb_im[comb_im > p98] = p98
-  norm_comb_im = 255 * (comb_im - p2) / (p98 - p2)
+  zscale = ZScaleInterval()
 
-  # Separate the array back
-  real_image = np.reshape(norm_comb_im[0:100*100], (100, 100))
-  ref_image = np.reshape(norm_comb_im[100*100:], (100, 100))
+  def scale_image(image):
+      vmin, vmax = zscale.get_limits(image)
+      image = np.clip(image, vmin, vmax)
+      image = 255 * (image - vmin) / (vmax - vmin)
+      return image
 
-  # Rescale the already available difference image
-  diff_image = np.copy(dataset[index_no, :, :, 2])  # Create a copy to avoid modifying the original data
-  p2_diff = np.percentile(diff_image, 2)
-  p98_diff = np.percentile(diff_image, 98)
-  diff_image[diff_image < p2_diff] = p2_diff
-  diff_image[diff_image > p98_diff] = p98_diff
-  norm_diff_image = 255 * (diff_image - p2_diff) / (p98_diff - p2_diff)
-  # Return the real image, the reference image and the difference image
-  return [real_image, ref_image, norm_diff_image]
+  # Get and scale the real image
+  real_image = scale_image(nd_array[index_no, :, :, 0])
+
+  # Get and scale the reference image
+  ref_image = scale_image(nd_array[index_no, :, :, 1])
+
+  # Get and scale the difference image
+  diff_image = scale_image(nd_array[index_no, :, :, 2])
+
+  # Return the real image, the reference image, the difference image
+  return [real_image, ref_image, diff_image]
 
 def save_picture(dataset, index_no, example):
   # Save the images as png
   processed_im = preprocess(dataset, index_no)
   if example: 
     for j in range(3):
-      plt.imsave(f"data/pics/prompt_pics/Example_{index_no}_fig_{j}.png", processed_im[j],cmap='gray')
+      img_with_circle = add_red_circle(processed_im[j])
+      plt.imsave(f"data/pics/prompt_pics/Example_{index_no}_fig_{j}.png", img_with_circle)
 
   else:
     for j in range(3):
-      plt.imsave(f"data/pics/Example_{index_no}_fig_{j}.png", processed_im[j],cmap='gray')
-      
+      img_with_circle = add_red_circle(processed_im[j])
+      plt.imsave(f"data/pics/Example_{index_no}_fig_{j}.png", img_with_circle)
+
 def save_prompt(instructions, run_name):
   """Saves the system instructions to a text file. It first strips the images from the system prompt and only saves the text part of the prompt to save space.
 
@@ -426,3 +419,23 @@ def display_images(index_no):
   axes[2].axis('off')
 
   plt.show()
+
+def add_red_circle(image):
+  """Adds a red circle to the center of an image."""
+  fig, ax = plt.subplots()
+  ax.imshow(image, cmap='gray')
+  center_x, center_y = image.shape[1] // 2, image.shape[0] // 2
+  circ = Circle((center_x, center_y), radius=12, edgecolor='red', facecolor='none', linewidth=3)
+  ax.add_patch(circ)
+  ax.axis('off')
+  
+  # Draw canvas to array
+  fig.canvas.draw()
+  
+  # Convert canvas to image array
+  img_array = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+  img_array = img_array.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+  
+  plt.close(fig)
+  
+  return img_array
