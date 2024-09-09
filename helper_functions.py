@@ -363,10 +363,10 @@ def build_run_batch(bq_client, batch_index, labels_ref, PROJECT_ID, DATASET_ID, 
   create_table_query = f"""
   CREATE OR REPLACE TABLE `{PROJECT_ID}.{DATASET_ID}.{run_name}` AS
   SELECT  t1.index_no, t2.label AS actual,
-      JSON_VALUE(JSON_VALUE(REGEXP_REPLACE(t1.response, r'^\[(.*)\]$', r'\\1'), '$.content.parts[0].text'),'$.class') AS predicted,
-      JSON_VALUE(JSON_VALUE(REGEXP_REPLACE(t1.response, r'^\[(.*)\]$', r'\\1'), '$.content.parts[0].text'),'$.explanation') AS explanation,
-      JSON_VALUE(JSON_VALUE(REGEXP_REPLACE(t1.response, r'^\[(.*)\]$', r'\\1'), '$.content.parts[0].text'),'$.interest_score') AS interest_score,
-      t1.response, t1.request 
+      JSON_EXTRACT_SCALAR(JSON_EXTRACT_SCALAR(response, '$.candidates[0].content.parts[0].text'), '$.class') AS predicted,
+      JSON_EXTRACT_SCALAR(JSON_EXTRACT_SCALAR(response, '$.candidates[0].content.parts[0].text'), '$.explanation') AS explanation,
+      JSON_EXTRACT_SCALAR(JSON_EXTRACT_SCALAR(response, '$.candidates[0].content.parts[0].text'),'$.interest_score') AS interest_score,
+    t1.response, t1.request 
           FROM `{output_table_name}` as t1
     LEFT JOIN `{PROJECT_ID}.{DATASET_ID}.{labels_ref.table_id}` as t2 
     ON t1.index_no=t2.index_no"""
@@ -425,7 +425,7 @@ def add_red_circle(image):
   fig, ax = plt.subplots()
   ax.imshow(image, cmap='gray')
   center_x, center_y = image.shape[1] // 2, image.shape[0] // 2
-  circ = Circle((center_x, center_y), radius=12, edgecolor='red', facecolor='none', linewidth=3)
+  circ = Circle((center_x, center_y), radius=7, edgecolor='red', facecolor='none', linewidth=3)
   ax.add_patch(circ)
   ax.axis('off')
   
