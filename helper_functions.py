@@ -84,7 +84,7 @@ def preprocess(nd_array, index_no):
       - ref_image: A 2D array representing the reference image.
       - diff_image: A 2D array representing the difference between the reference and real images.
   """
-  zscale = ZScaleInterval()
+  zscale = ZScaleInterval(contrast=0.1)
 
   def scale_image(image):
       vmin, vmax = zscale.get_limits(image)
