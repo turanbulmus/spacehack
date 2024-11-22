@@ -2,6 +2,8 @@
 /pics
 /.venv
 /results
+/MeerLICHT_dataset
+/prompts
 request.json
 notebook_template.ipynb
 
