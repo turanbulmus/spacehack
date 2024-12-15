@@ -362,14 +362,13 @@ def build_run_batch(bq_client, batch_index, labels_ref, PROJECT_ID, DATASET_ID, 
   # The query to generate a final table with results
   create_table_query = f"""
   CREATE OR REPLACE TABLE `{PROJECT_ID}.{DATASET_ID}.{run_name}` AS
-  SELECT  t1.index_no, t2.label AS actual,
+  SELECT  t1.index_no,
       JSON_EXTRACT_SCALAR(JSON_EXTRACT_SCALAR(response, '$.candidates[0].content.parts[0].text'), '$.class') AS predicted,
       JSON_EXTRACT_SCALAR(JSON_EXTRACT_SCALAR(response, '$.candidates[0].content.parts[0].text'), '$.explanation') AS explanation,
       JSON_EXTRACT_SCALAR(JSON_EXTRACT_SCALAR(response, '$.candidates[0].content.parts[0].text'),'$.interest_score') AS interest_score,
     t1.response, t1.request 
-          FROM `{output_table_name}` as t1
-    LEFT JOIN `{PROJECT_ID}.{DATASET_ID}.{labels_ref.table_id}` as t2 
-    ON t1.index_no=t2.index_no"""
+    FROM `{output_table_name}` as t1
+    """
   # Run the query
   query_job = bq_client.query(create_table_query)
   results = query_job.result()
@@ -384,7 +383,7 @@ def build_run_batch(bq_client, batch_index, labels_ref, PROJECT_ID, DATASET_ID, 
       pass
   # Download the results to generate KPIs
   download_query = f"""
-  SELECT index_no, actual, predicted, explanation, interest_score
+  SELECT index_no, predicted, explanation, interest_score
   FROM {PROJECT_ID}.{DATASET_ID}.{run_name} 
   """
   return bq_client.query_and_wait(download_query).to_dataframe()
