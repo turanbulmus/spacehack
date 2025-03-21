@@ -30,8 +30,6 @@ def generate(model, prompt):
   # Generate content using the specified prompt and configurations.
   responses = model.generate_content(
       prompt,
-      generation_config=generation_config,# Configuration for text generation
-      safety_settings=safety_settings,# Settings for safety checks during generation
       stream=False,# Set to False to retrieve all generated content at once
   )
   # Return the generated responses.
@@ -297,11 +295,11 @@ def build_run_batch(bq_client, batch_index, labels_ref, PROJECT_ID, DATASET_ID, 
        - Creates a batch data dataframe using the static prompt, dynamic prompt, and specified parameters.
        - Uploads the dataframe to a GCS bucket
        - Creates a Big query table using the data stored in GCS bucket. 
-    6. Generates a request.json file for batch processing.
-    7. Sends the batch prediction job to the specified project.
-    8. Waits until the batch prediction job concludes.
-    9. Generate a Big Query table that processes the BatchPredictionJob
-    10. Download the table and exports as a pandas dataframe
+    5. Generates a request.json file for batch processing.
+    6. Sends the batch prediction job to the specified project.
+    7. Waits until the batch prediction job concludes.
+    8. Generate a Big Query table that processes the BatchPredictionJob
+    9. Download the table and exports as a pandas dataframe
 
   Args:
     bq_client: An instance of the BigQuery client.
@@ -337,9 +335,14 @@ def build_run_batch(bq_client, batch_index, labels_ref, PROJECT_ID, DATASET_ID, 
   batch_df = pd.DataFrame(columns=["request", "index_no"])
 
   for t in batch_index:
-    dyna_prompt = examples + create_ex(t, False)
-    df_temp = pd.DataFrame([[batch_data_create(stat_prompt, dyna_prompt, temperature, top_p), t]], columns=["request", "index_no"])
-    batch_df = pd.concat([batch_df, df_temp], ignore_index=True)
+    try:
+      dyna_prompt = examples + create_ex(t, False)
+      df_temp = pd.DataFrame([[batch_data_create(stat_prompt, dyna_prompt, temperature, top_p), t]], columns=["request", "index_no"])
+      batch_df = pd.concat([batch_df, df_temp], ignore_index=True)
+    except Exception as e:
+        print(f"Error processing index {t}: {e}")
+        print("Skipping this index and continuing with the next.")
+        continue  # Skip to the next iteration if an error occurs
   
   job_config = bigquery.LoadJobConfig(schema=schema, write_disposition="WRITE_TRUNCATE")
   job_config.source_format = 'CSV'
@@ -374,8 +377,8 @@ def build_run_batch(bq_client, batch_index, labels_ref, PROJECT_ID, DATASET_ID, 
   results = query_job.result()
   # Clean up after the run
   # Delete the interim tables
-  bq_client.delete_table(output_table_name, not_found_ok=True)  # Make an API request.
-  bq_client.delete_table(input_table_name, not_found_ok=True)  # Make an API request.
+  bq_client.delete_table(output_table_name)  # Make an API request.
+  bq_client.delete_table(input_table_name)  # Make an API request.
   # Delete the reqest.json file
   try:
     os.remove("request.json")
