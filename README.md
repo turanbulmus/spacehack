@@ -56,12 +56,23 @@ spacehack/
 
 ## Setup
 
+## Setup
+
 1.  **Prerequisites:**
     *   Python 3.10+ (tested with 3.12.3)
-    *   Google Cloud Platform (GCP) Project
+    *   **Google Cloud Platform (GCP) Account:**
+        *   If you don't have a GCP account, create one at [https://cloud.google.com/](https://cloud.google.com/). A credit card is required to create an account, but new accounts may be eligible for free credits.
+        *   **Billing:** Ensure that billing is enabled for your GCP project. You can enable billing and link a billing account in the GCP console.
+    *   GCP Project
     *   Enabled GCP APIs:
         *   Vertex AI API (`aiplatform.googleapis.com`)
         *   BigQuery API (`bigquery.googleapis.com`)
+    *   **GCP Permissions:**
+        *   Your user account or service account needs the following IAM roles to interact with Vertex AI and BigQuery:
+            *   `roles/aiplatform.user`
+            *   `roles/bigquery.user`
+            * `roles/storage.objectViewer`
+        *   You can grant these roles in the GCP console under "IAM & Admin" or using the `gcloud` command-line tool.
     *   GCP Authentication configured for your environment (e.g., run `gcloud auth application-default login` locally, or use Colab's built-in authentication).
     *   A BigQuery Dataset created within your GCP project (the default name `spacehack` is used in the notebooks, update if necessary).
 
@@ -76,6 +87,23 @@ spacehack/
     pip install -r requirements.txt
     ```
     *(Note: If running in Colab, package installation might be handled differently, potentially requiring a kernel restart after installation as shown in the notebook comments).*
+
+
+## Data Acquisition
+
+The MeerLICHT dataset used in this project consists of two files:
+
+* `new_data.npy`:  A NumPy array containing the image triplets (New, Reference, Difference). Download using `gdown` with the following ID: `1EZZyK_E99H--7yrTumYnuogrpd8F-KOv`
+* `new_labels.csv`: A CSV file containing the labels for each image triplet. Download using `gdown` with the following ID: `11qLdAGY-_v8wC4IzE9CFOIywapSFWr7g`
+
+Remember to create the data directory if it doesn't already exist.
+
+To download these files, ensure you have `gdown` installed (`pip install gdown`). Then, use the following commands:
+
+```bash
+gdown --id 1EZZyK_E99H--7yrTumYnuogrpd8F-KOv -O data/new_data.npy
+gdown --id 11qLdAGY-_v8wC4IzE9CFOIywapSFWr7g -O data/new_labels.csv
+```
 
 ## Usage
 
