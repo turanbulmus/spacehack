@@ -103,6 +103,16 @@ def preprocess(nd_array, index_no):
   return [real_image, ref_image, diff_image]
 
 def save_picture(dataset, index_no, example):
+  """Saves a triplet of images from a multi-dimensional array as PNG files.
+  
+  Args:
+    dataset: A multi-dimensional array containing image data. Each element is expected to be a 3-dimensional array representing a triplet of images (new, reference and difference).
+    index_no: The index of the image triplet to be saved.
+    example: A boolean that indicates if the images are examples or not. If they are examples, they will be saved in the "data/pics/prompt_pics" folder.
+
+  Returns:
+    None  
+  """
   # Save the images as png
   processed_im = preprocess(dataset, index_no)
   if example: 
@@ -334,13 +344,13 @@ def build_run_batch(bq_client, batch_index, labels_ref, PROJECT_ID, DATASET_ID, 
   # Create the pandas df that stores the requests
   batch_df = pd.DataFrame(columns=["request", "index_no"])
 
-  for t in batch_index:
+  for image_index in batch_index:
     try:
-      dyna_prompt = examples + create_ex(t, False)
-      df_temp = pd.DataFrame([[batch_data_create(stat_prompt, dyna_prompt, temperature, top_p), t]], columns=["request", "index_no"])
+      dyna_prompt = examples + create_ex(image_index, False)
+      df_temp = pd.DataFrame([[batch_data_create(stat_prompt, dyna_prompt, temperature, top_p), image_index]], columns=["request", "index_no"])
       batch_df = pd.concat([batch_df, df_temp], ignore_index=True)
     except Exception as e:
-        print(f"Error processing index {t}: {e}")
+        print(f"Error processing index {image_index}: {e}")
         print("Skipping this index and continuing with the next.")
         continue  # Skip to the next iteration if an error occurs
   
@@ -423,7 +433,15 @@ def display_images(index_no):
   plt.show()
 
 def add_red_circle(image):
-  """Adds a red circle to the center of an image."""
+  """Adds a red circle to the center of an image.
+
+  Args:
+    image: A 2D numpy array representing the image.
+
+  Returns:
+    A 3D numpy array representing the image with a red circle added.
+  """
+  
   fig, ax = plt.subplots()
   ax.imshow(image, cmap='gray')
   center_x, center_y = image.shape[1] // 2, image.shape[0] // 2

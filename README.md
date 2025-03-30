@@ -33,8 +33,25 @@ The code primarily demonstrates the workflow using the MeerLICHT dataset, but th
 *   Demonstration of LLM-based evaluation ("LLM judging LLM") for coherence assessment.
 
 ## Repository Structure
-
-. ├── 01_LLM_Classification_Transients.ipynb # Notebook for initial Real/Bogus classification & explanation generation ├── 02_LLM_Judging_LLM_Classifications.ipynb # Notebook for LLM evaluation of the first notebook's outputs ├── helper_functions.py # Utility functions for data handling, prompts, GCP interaction, etc. ├── requirements.txt # Python package dependencies ├── data/ # Placeholder for data files (created/downloaded by scripts) │ ├── new_data.npy # Downloaded image triplets │ ├── new_labels.csv # Downloaded labels │ ├── predictions_results.csv # Example output from 01_...ipynb │ ├── predictions_with_Coherence.csv # Example output from 02_...ipynb │ └── pics/ # Generated image files for prompts/analysis │ └── prompt_pics/ # Images used in few-shot examples ├── prompts/ # Placeholder for saved prompt text files (created by scripts) └── README.md # This file
+``` bash
+spacehack/ 
+  ├── data/ # Placeholder for data files (created/downloaded by scripts) 
+  │ │ └── pics/ # Generated image files for prompts/analysis
+  │ │ └── prompt_pics/ # Images used in few-shot examples 
+  │ ├── new_data.npy # Downloaded image triplets 
+  │ ├── new_labels.csv # Downloaded labels 
+  │ ├── predictions_results.csv # Prediction results from 01_...ipynb
+  │ ├── predictions_with_Coherence.csv # Example output from 02_...ipynb
+  ├── prompts/ # Placeholder for saved prompt text files (created by scripts) 
+  ├── 01_LLM_Classification_Transients.ipynb # Notebook for initial  classification & explanation generation 
+  ├── 02_LLM_Judging_LLM_Classifications.ipynb # Notebook for LLM evaluation of the first notebook's outputs 
+  ├── CONTRIBUTING.md # Instructions for contributing to the repository 
+  ├── helper_functions.py # Utility functions for data handling, prompts, GCP interaction, etc. 
+  ├── LICENSE # Software license 
+  ├── requirements.txt # Python package dependencies 
+  └── README.md # This file
+```
+  TODO: Add Round2_MeerLICHT.ipynb above
 
 
 ## Setup
@@ -82,6 +99,8 @@ The code primarily demonstrates the workflow using the MeerLICHT dataset, but th
         *   Runs a second Vertex AI Batch Prediction job for the evaluation task.
         *   Retrieves evaluation results from BigQuery.
         *   Saves evaluated results to `data/predictions_with_Coherence.csv`.
+    
+    TODO: Add what Round2_MeerLICHT.ipynb does    
 
 3.  **Important Notes:**
     *   Running these notebooks executes jobs on Google Cloud Platform (Vertex AI, BigQuery) which will incur costs.
