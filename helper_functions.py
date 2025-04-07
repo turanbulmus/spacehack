@@ -430,21 +430,22 @@ def add_red_circle(image):
   Returns:
     A 3D numpy array representing the image with a red circle added.
   """
-  
-  fig, ax = plt.subplots()
+  fig, ax = plt.subplots(figsize=(image.shape[1] / 100, image.shape[0] / 100), dpi=500)  # Match figure size to image
   ax.imshow(image, cmap='gray')
-  center_x, center_y = image.shape[1] // 2, image.shape[0] // 2
-  circ = Circle((center_x, center_y), radius=7, edgecolor='red', facecolor='none', linewidth=3)
+  
+  # Calculate the center and add a red circle
+  center_x, center_y = image.shape[1] // 2, image.shape[0] // 2 
+  circ = Circle((center_x - 1, center_y - 1), radius=7, edgecolor='red', facecolor='none', linewidth=.6)
   ax.add_patch(circ)
-  ax.axis('off')
   
-  # Draw canvas to array
+  ax.axis('off')  # Remove axes for a clean image
+  
+  # Save the image to an array
+  fig.tight_layout(pad=0)  # Remove padding around the image
   fig.canvas.draw()
-  
-  # Convert canvas to image array
   img_array = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
   img_array = img_array.reshape(fig.canvas.get_width_height()[::-1] + (3,))
   
-  plt.close(fig)
+  plt.close(fig)  # Close the figure to release memory
   
   return img_array

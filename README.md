@@ -56,8 +56,6 @@ spacehack/
 
 ## Setup
 
-## Setup
-
 1.  **Prerequisites:**
     *   Python 3.10+ (tested with 3.12.3)
     *   **Google Cloud Platform (GCP) Account:**
