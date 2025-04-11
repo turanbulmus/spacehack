@@ -99,8 +99,8 @@ Remember to create the data directory if it doesn't already exist.
 To download these files, ensure you have `gdown` installed (`pip install gdown`). Then, use the following commands:
 
 ```bash
-gdown --id 1EZZyK_E99H--7yrTumYnuogrpd8F-KOv -O data/new_data.npy
-gdown --id 11qLdAGY-_v8wC4IzE9CFOIywapSFWr7g -O data/new_labels.csv
+wget https://zenodo.org/records/14714279/files/MeerLICHT_images.npy?download=1 -O data/new_data.npy
+wget https://zenodo.org/records/14714279/files/MeerLICHT_labels.csv?download=1 -O data/new_labels.csv
 ```
 
 ## Usage
