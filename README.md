@@ -44,15 +44,14 @@ spacehack/
   │ ├── predictions_with_Coherence.csv # Example output from 02_...ipynb
   ├── prompts/ # Placeholder for saved prompt text files (created by scripts) 
   ├── 01_LLM_Classification_Transients.ipynb # Notebook for initial  classification & explanation generation 
-  ├── 02_LLM_Judging_LLM_Classifications.ipynb # Notebook for LLM evaluation of the first notebook's outputs 
+  ├── 02_LLM_Judging_LLM_Classifications.ipynb # Notebook for LLM evaluation of the first notebook's outputs
+  ├── Repeatability_Analysis.ipynb # Notebook for statistical analysis of Appendix C of the paper
   ├── CONTRIBUTING.md # Instructions for contributing to the repository 
   ├── helper_functions.py # Utility functions for data handling, prompts, GCP interaction, etc. 
   ├── LICENSE # Software license 
   ├── requirements.txt # Python package dependencies 
   └── README.md # This file
 ```
-  TODO: Add Round2_MeerLICHT.ipynb above
-
 
 ## Setup
 
