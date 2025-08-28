@@ -57,8 +57,8 @@ def create_ex(data_index, examples):
 
   # Load images from files using the given data index
   image1 = Part.from_image(Image.load_from_file(f"{image_dir}Example_{data_index}_fig_0.png"))
-  image2 = Part.from_image(Image.load_from_file(f"{image_dir}prompt_pics/Example_{data_index}_fig_1.png"))
-  image3 = Part.from_image(Image.load_from_file(f"{image_dir}prompt_pics/Example_{data_index}_fig_2.png"))
+  image2 = Part.from_image(Image.load_from_file(f"{image_dir}Example_{data_index}_fig_1.png"))
+  image3 = Part.from_image(Image.load_from_file(f"{image_dir}Example_{data_index}_fig_2.png"))
  
   # Return the list containing strings and images
   return [str_new, image1, str_ref, image2, str_dif, image3]
@@ -217,7 +217,7 @@ def if_tbl_exists(bq_client, table_ref):
     except NotFound:
         return bq_client.create_table(table_ref)
 
-def batch_data_create(stat_prompt, dyna_prompt, TEMPERATURE, TOP_P):
+def batch_data_create(stat_prompt, dyna_prompt, TEMPERATURE):
   """
   Creates a JSON payload for batch data generation with OpenAI API.
 
@@ -226,7 +226,6 @@ def batch_data_create(stat_prompt, dyna_prompt, TEMPERATURE, TOP_P):
     dyna_prompt: Dynamic prompt, can be a list of strings or dictionaries. If a dictionary, it must be
                  a valid OpenAI API prompt structure.
     TEMPERATURE: Temperature parameter for text generation.
-    TOP_P: Top P parameter for text generation.
     TOP_K: Top K parameter for text generation.
 
   Returns:
@@ -257,8 +256,10 @@ def batch_data_create(stat_prompt, dyna_prompt, TEMPERATURE, TOP_P):
     "generationConfig": {
         "maxOutputTokens": 2024,
         "temperature": TEMPERATURE,
-        "topP": TOP_P,
         "responseMimeType": "application/json",
+        "thinkingConfig": {
+            "thinkingBudget": -1
+        }
     },
     "safetySettings": [
         {
@@ -282,7 +283,7 @@ def batch_data_create(stat_prompt, dyna_prompt, TEMPERATURE, TOP_P):
 
   from google.cloud import bigquery
 
-def build_run_batch(bq_client, batch_index, labels_ref, PROJECT_ID, DATASET_ID, run_name, model, stat_prompt, examples, temperature, top_p):
+def build_run_batch(bq_client, batch_index, labels_ref, PROJECT_ID, DATASET_ID, run_name, model, stat_prompt, examples, temperature):
   """Builds necessary the batch request job, run the batch process job and returns the results.
 
   This function performs the following steps:
@@ -309,7 +310,6 @@ def build_run_batch(bq_client, batch_index, labels_ref, PROJECT_ID, DATASET_ID, 
     run_name: The name of the Vertex AI Experiment run. 
     examples: A set of examples to use for constructing dynamic prompts.
     temperature: The temperature parameter for the generative model.
-    top_p: The top_p parameter for the generative model.
     top_k: The top_k parameter for the generative model.
     random_seed: An optional seed for the random number generator.
 
@@ -336,7 +336,7 @@ def build_run_batch(bq_client, batch_index, labels_ref, PROJECT_ID, DATASET_ID, 
   for image_index in batch_index:
     try:
       dyna_prompt = examples + create_ex(image_index, False)
-      df_temp = pd.DataFrame([[batch_data_create(stat_prompt, dyna_prompt, temperature, top_p), image_index]], columns=["request", "index_no"])
+      df_temp = pd.DataFrame([[batch_data_create(stat_prompt, dyna_prompt, temperature), image_index]], columns=["request", "index_no"])
       batch_df = pd.concat([batch_df, df_temp], ignore_index=True)
     except Exception as e:
         print(f"Error processing index {image_index}: {e}")

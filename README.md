@@ -102,6 +102,10 @@ wget https://zenodo.org/records/14714279/files/MeerLICHT_images.npy?download=1 -
 wget https://zenodo.org/records/14714279/files/MeerLICHT_labels.csv?download=1 -O data/new_labels.csv
 ```
 
+For being able to run the code also create the necessary folders with:
+```bash
+mkdir data/pics/ && mkdir data/pics/prompt_pics/ && mkdir prompts/
+```
 ## Usage
 
 1.  **Configure GCP Variables:**
