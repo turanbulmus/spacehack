@@ -5,7 +5,6 @@
 
 This repository contains the code and notebooks associated with the research paper:
 
-TODO: Replace the link below with the actual paper link once puplished
 **Paper:** [Textual interpretation of transient image classifications from large language models](https://www.nature.com/articles/s41550-025-02670-z) (Nature Astronomy Paper)
 
 **Authors:** Fiorenzo Stoppa¹, Turan Bulmus², Steven Bloemen³, Stephen J. Smartt¹⁶, Paul J. Groot³⁴⁵, Paul Vreeswijk³, Ken W. Smith¹⁶
