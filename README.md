@@ -1,13 +1,12 @@
 # Large Language Models Enable Textual Interpretation of Image-Based Astronomical Transient Classifications - Code Repository
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
-TODO: Replace the link below with the actual paper link once puplished
 [![DOI](https://img.shields.io/badge/DOI-10.21203/rs.3.rs--5723428/v1-blue)](https://doi.org/10.21203/rs.3.rs-5723428/v1)
 
 This repository contains the code and notebooks associated with the research paper:
 
 TODO: Replace the link below with the actual paper link once puplished
-**Paper:** [Large Language Models Enable Textual Interpretation of Image-Based Astronomical Transient Classifications](https://doi.org/10.21203/rs.3.rs-5723428/v1) (Research Square Preprint)
+**Paper:** [Textual interpretation of transient image classifications from large language models](https://www.nature.com/articles/s41550-025-02670-z) (Nature Astronomy Paper)
 
 **Authors:** Fiorenzo Stoppa¹, Turan Bulmus², Steven Bloemen³, Stephen J. Smartt¹⁶, Paul J. Groot³⁴⁵, Paul Vreeswijk³, Ken W. Smith¹⁶
 (*Affiliations omitted for brevity, see paper*)
